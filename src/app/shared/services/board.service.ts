@@ -41,7 +41,7 @@ export class BoardService {
     return currentValues;
   }
 
-  private get initialState() {
+  private get initialState(): TState {
     const initalState = new Array(9).fill(null)
     return initalState
   }
@@ -61,7 +61,7 @@ export class BoardService {
   readonly resetBoard$ = new Subject<void>()
   readonly addValue$ = new Subject<{ idx: number, player: TPlayer }>()
 
-  readonly board$ = this.boardValues$.pipe(mergeWith(this.addValue$.pipe(map(this.lastestAddValue), distinctUntilChanged()), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => typeof stateHandlerFN === "function" ? stateHandlerFN(state) : stateHandlerFN, this.initialState), shareReplay())
+  readonly board$ = this.boardValues$.pipe(map((values) => (_state: TState) => values)).pipe(map((value) => value), mergeWith(this.addValue$.pipe(map(this.lastestAddValue), distinctUntilChanged()), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => stateHandlerFN(state), this.initialState), shareReplay())
 
   readonly isXWinner = this.board$.pipe(map(values => this.totalCount.value >= 4 && this.currentPlayer() === "O" ? this.checkWinner(values, "X") : false))
   readonly isOWinner = this.board$.pipe(map(values => this.totalCount.value >= 4 && this.currentPlayer() === "X" ? this.checkWinner(values, "O") : false))
