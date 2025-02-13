@@ -9,9 +9,7 @@
     }
     <div>Wins!</div>
   </div>
-  }
-
-  @if((bs.totalCount | async) === 9){
+  } @else if(bs.isGameOver | async ){
   <div>Draw!</div>
   }
 
