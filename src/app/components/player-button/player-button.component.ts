@@ -9,7 +9,12 @@ import { Component, inject, Input } from '@angular/core';
   templateUrl: './player-button.component.html',
 })
 export class PlayerButtonComponent {
-  @Input() item: TPlayer | null = null
-  @Input() index: number = 0
-  protected readonly bs = inject(BoardService)
+  @Input("item") item: TPlayer | null = null
+  @Input("index") index: number = 0
+
+  private readonly bs = inject(BoardService)
+
+  protected addValue() {
+    this.bs.addValue$.next({ idx: this.index, player: this.bs.currentPlayer() })
+  }
 }
