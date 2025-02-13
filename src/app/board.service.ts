@@ -58,17 +58,17 @@ export class BoardService {
   }
 
   private boardValues$ = new BehaviorSubject<TState>(this.initialState);
-  currentPlayer = signal<TPlayer>("X");
-  resetBoard$ = new Subject<void>()
-  addValue$ = new Subject<{ idx: number, player: TPlayer }>()
 
-  board$ = this.boardValues$.pipe(mergeWith(this.addValue$.pipe(map(this.lastestAddValue), distinctUntilChanged()), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => typeof stateHandlerFN === "function" ? stateHandlerFN(state) : stateHandlerFN, this.initialState), shareReplay())
+  readonly currentPlayer = signal<TPlayer>("X");
+  readonly resetBoard$ = new Subject<void>()
+  readonly addValue$ = new Subject<{ idx: number, player: TPlayer }>()
 
+  readonly board$ = this.boardValues$.pipe(mergeWith(this.addValue$.pipe(map(this.lastestAddValue), distinctUntilChanged()), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => typeof stateHandlerFN === "function" ? stateHandlerFN(state) : stateHandlerFN, this.initialState), shareReplay())
 
-  isXWinner = this.board$.pipe(map(values => this.totalCount.value >= 4 ? this.checkWinner(values, "X") : false))
-  isOWinner = this.board$.pipe(map(values => this.totalCount.value >= 4 ? this.checkWinner(values, "O") : false))
+  readonly isXWinner = this.board$.pipe(map(values => this.totalCount.value >= 4 && this.currentPlayer() === "O" ? this.checkWinner(values, "X") : false))
+  readonly isOWinner = this.board$.pipe(map(values => this.totalCount.value >= 4 && this.currentPlayer() === "X" ? this.checkWinner(values, "O") : false))
 
-  totalCount = new BehaviorSubject<number>(0)
-  isGameOver = combineLatest([this.isXWinner, this.isOWinner, this.totalCount.pipe(map(value => value === 9))]).pipe(map((values) => values.some(Boolean)))
+  readonly totalCount = new BehaviorSubject<number>(0)
+  readonly isGameOver = combineLatest([this.isXWinner, this.isOWinner, this.totalCount.pipe(map(value => value === 9))]).pipe(map((values) => values.some(Boolean)))
 }
 
