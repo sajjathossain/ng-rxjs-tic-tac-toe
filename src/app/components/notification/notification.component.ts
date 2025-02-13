@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { BoardService } from '../board.service';
+import { BoardService } from '../../shared';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
