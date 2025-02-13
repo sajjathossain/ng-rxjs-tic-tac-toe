@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { BoardService } from '../../shared';
 import { AsyncPipe } from '@angular/common';
+import { BoardService } from '#shared/services';
 
 @Component({
   selector: 'app-notification',

@@ -1,5 +1,6 @@
+import { BoardService } from '#shared/services';
+import { TPlayer } from '#shared/types';
 import { Component, inject, Input } from '@angular/core';
-import { BoardService, TPlayer } from '../../shared';
 
 @Component({
   selector: 'app-player-button',

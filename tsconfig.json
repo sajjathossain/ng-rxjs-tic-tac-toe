@@ -24,6 +24,12 @@
     ],
     "baseUrl": "",
     "paths": {
+      "#components/*": [
+        "./src/app/components/*"
+      ],
+      "#shared/*": [
+        "./src/app/shared/*"
+      ],
       "@/*": [
         "./src/*"
       ]

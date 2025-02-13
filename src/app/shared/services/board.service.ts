@@ -1,9 +1,7 @@
+import { TPlayer, TState } from "#shared/types";
 import { Injectable, signal } from "@angular/core";
 import { BehaviorSubject, combineLatest, Subject } from "rxjs";
 import { distinctUntilChanged, map, mergeWith, scan, shareReplay } from "rxjs/operators";
-
-export type TPlayer = "X" | "O";
-export type TState = (TPlayer | null)[];
 
 @Injectable({
   providedIn: 'root'

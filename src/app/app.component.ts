@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { AsyncPipe, } from '@angular/common';
 import { BoardService } from './shared/';
-import { NotificationComponent } from './components/notification/notification.component';
-import { PlayerButtonComponent } from './components/player-button/player-button.component';
+import { NotificationComponent } from '#components/notification/notification.component';
+import { PlayerButtonComponent } from '#components/player-button/player-button.component';
 
 @Component({
   selector: 'app-root',
