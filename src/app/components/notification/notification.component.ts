@@ -8,7 +8,7 @@ import { BoardService } from '#shared/services';
   providers: [AsyncPipe],
   styles: `
     :host {
-      @apply absolute w-full h-full top-0 left-0 z-10 bg-gray-700 backdrop-blur-md
+      @apply absolute w-full h-full top-0 left-0 z-10 bg-gray-700 backdrop-blur-md rounded-md
     }
   `,
   templateUrl: './notification.component.html',
