@@ -16,6 +16,10 @@ export class AppComponent {
   private readonly bs = inject(BoardService)
   private readonly ap = inject(AsyncPipe)
 
+  get currentPlayer() {
+    return this.bs.currentPlayer()
+  }
+
   get isGameOver() {
     return this.ap.transform(this.bs.isGameOver)
   }

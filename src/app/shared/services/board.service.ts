@@ -1,7 +1,7 @@
 import { TPlayer, TState } from "#shared/types";
 import { Injectable, signal } from "@angular/core";
-import { BehaviorSubject, combineLatest, Subject } from "rxjs";
-import { distinctUntilChanged, map, mergeWith, scan, shareReplay } from "rxjs/operators";
+import { BehaviorSubject, combineLatest, fromEvent, Subject } from "rxjs";
+import { distinctUntilChanged, filter, map, mergeWith, scan, shareReplay, tap } from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -30,13 +30,17 @@ export class BoardService {
     return false
   }
 
+  private changePlayer() {
+    this.currentPlayer.update((currentPlayer) => currentPlayer === "X" ? "O" : "X");
+    this.totalCount.next(this.totalCount.value + 1);
+  }
+
   private readonly lastestAddValue = (payload: { idx: number, player: TPlayer }) => (state: TState): TState => {
     const { idx, player } = payload;
     const currentValues = state;
     const currentPlayer = player;
     currentValues.splice(idx, 1, currentPlayer);
-    this.currentPlayer.set(currentPlayer === "X" ? "O" : "X");
-    this.totalCount.next(this.totalCount.value + 1);
+    this.changePlayer()
 
     return currentValues;
   }
@@ -51,6 +55,34 @@ export class BoardService {
     return this.initialState
   }
 
+  private readonly isKeyAllowed = (event: KeyboardEvent) => {
+    const key = Number(event.key);
+
+    if (key >= 0 && key <= 9) {
+      return true
+    }
+
+    return false
+  }
+
+  private readonly keypress = (event: KeyboardEvent) => (state: TState): TState => {
+    let key = Number(event.key);
+    if (key === 0) {
+      return this.resetBoard()(state)
+    }
+
+    key = key - 1
+
+    const keyIdxValue = state[key]
+    if (keyIdxValue !== null) {
+      return state
+    }
+
+    state.splice(key, 1, this.currentPlayer())
+    this.changePlayer()
+    return state
+  }
+
   get board() {
     return this.board$
   }
@@ -60,8 +92,9 @@ export class BoardService {
   readonly currentPlayer = signal<TPlayer>("X");
   readonly resetBoard$ = new Subject<void>()
   readonly addValue$ = new Subject<{ idx: number, player: TPlayer }>()
+  readonly keypress$ = fromEvent<KeyboardEvent>(document, "keydown").pipe<KeyboardEvent, KeyboardEvent>(filter(this.isKeyAllowed), tap(event => event.preventDefault()))
 
-  private readonly board$ = this.boardValues$.pipe(map((values) => (_state: TState) => values)).pipe(map((value) => value), mergeWith(this.addValue$.pipe(map(this.lastestAddValue), distinctUntilChanged()), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => stateHandlerFN(state), this.initialState), shareReplay())
+  private readonly board$ = this.boardValues$.pipe(map((values) => (_state: TState) => values)).pipe(mergeWith(this.keypress$.pipe(map(this.keypress)), this.addValue$.pipe(map(this.lastestAddValue), distinctUntilChanged()), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => stateHandlerFN(state), this.initialState), shareReplay())
 
   readonly isXWinner = this.board$.pipe(map(values => this.totalCount.value >= 4 && this.currentPlayer() === "O" ? this.checkWinner(values, "X") : false))
   readonly isOWinner = this.board$.pipe(map(values => this.totalCount.value >= 4 && this.currentPlayer() === "X" ? this.checkWinner(values, "O") : false))
