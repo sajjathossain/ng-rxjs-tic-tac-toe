@@ -1,13 +1,15 @@
 <div class="grid place-items-center gap-2 text-4xl font-bold h-full w-full">
+  @if((bs.isXWinner | async) || (bs.isOWinner | async)){
   <div class="h-fit flex gap-2">
-    @if((bs.isXWinner | async) === true){
+    @if((bs.isXWinner | async)){
     <div class="text-blue-500">X</div>
     }
-    @if((bs.isOWinner | async) === true){
+    @if((bs.isOWinner | async)){
     <div class="text-red-500">O</div>
     }
     <div>Wins!</div>
   </div>
+  }
 
   @if((bs.totalCount | async) === 9){
   <div>Draw!</div>
