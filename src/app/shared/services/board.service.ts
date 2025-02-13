@@ -1,7 +1,7 @@
 import { TPlayer, TState } from "#shared/types";
 import { Injectable, signal } from "@angular/core";
 import { BehaviorSubject, combineLatest, fromEvent, Subject } from "rxjs";
-import { distinctUntilChanged, filter, map, mergeWith, scan, shareReplay, tap } from "rxjs/operators";
+import { filter, map, mergeWith, scan, shareReplay, skipWhile, tap } from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +20,7 @@ export class BoardService {
 
 
   private readonly checkWinner = (board: TState, player: TPlayer) => {
+    console.log(board)
     for (const combination of this.winningCombinations) {
       const [pos1, pos2, pos3] = combination
       if (board[pos1] === player && board[pos2] === player && board[pos3] === player) {
@@ -32,10 +33,9 @@ export class BoardService {
 
   private changePlayer() {
     this.currentPlayer.update((currentPlayer) => currentPlayer === "X" ? "O" : "X");
-    this.totalCount.next(this.totalCount.value + 1);
   }
 
-  private readonly lastestAddValue = (payload: { idx: number, player: TPlayer }) => (state: TState): TState => {
+  private readonly addValue = (payload: { idx: number, player: TPlayer }) => (state: TState): TState => {
     const { idx, player } = payload;
     const currentValues = state;
     const currentPlayer = player;
@@ -51,7 +51,6 @@ export class BoardService {
   }
 
   private readonly resetBoard = (_event: void) => (_state: TState): TState => {
-    this.totalCount.next(0);
     return this.initialState
   }
 
@@ -87,19 +86,23 @@ export class BoardService {
     return this.board$
   }
 
-  private boardValues$ = new BehaviorSubject<TState>(this.initialState);
+  private caclulateTotalCount(state: TState) {
+    return state.filter(Boolean).length
+  }
+
+  private boardValues$ = new BehaviorSubject<TState>(this.initialState).pipe(map((values) => (_state: TState) => values));
 
   readonly currentPlayer = signal<TPlayer>("X");
   readonly resetBoard$ = new Subject<void>()
   readonly addValue$ = new Subject<{ idx: number, player: TPlayer }>()
   readonly keypress$ = fromEvent<KeyboardEvent>(document, "keydown").pipe<KeyboardEvent, KeyboardEvent>(filter(this.isKeyAllowed), tap(event => event.preventDefault()))
 
-  private readonly board$ = this.boardValues$.pipe(map((values) => (_state: TState) => values)).pipe(mergeWith(this.keypress$.pipe(map(this.keypress)), this.addValue$.pipe(map(this.lastestAddValue), distinctUntilChanged()), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => stateHandlerFN(state), this.initialState), shareReplay())
+  private readonly board$ = this.boardValues$.pipe(mergeWith(this.keypress$.pipe(map(this.keypress)), this.addValue$.pipe(map(this.addValue)), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => stateHandlerFN(state), this.initialState), shareReplay(1))
 
-  readonly isXWinner = this.board$.pipe(map(values => this.totalCount.value >= 4 && this.currentPlayer() === "O" ? this.checkWinner(values, "X") : false))
-  readonly isOWinner = this.board$.pipe(map(values => this.totalCount.value >= 4 && this.currentPlayer() === "X" ? this.checkWinner(values, "O") : false))
+  readonly totalCount = this.board$.pipe(map(this.caclulateTotalCount))
+  readonly isXWinner = this.board$.pipe(skipWhile(state => this.caclulateTotalCount(state) <= 4), map(values => this.checkWinner(values, "X")))
+  readonly isOWinner = this.board$.pipe(skipWhile(state => this.caclulateTotalCount(state) <= 4), map(values => this.checkWinner(values, "O")))
 
-  readonly totalCount = new BehaviorSubject<number>(0)
   readonly isGameOver = combineLatest([this.isXWinner, this.isOWinner, this.totalCount.pipe(map(value => value === 9))]).pipe(map((values) => values.some(Boolean)))
 }
 
