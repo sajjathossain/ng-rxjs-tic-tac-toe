@@ -1,0 +1,10 @@
+<button [disabled]="item" (click)="bs.addValue$.next({ idx: index, player: bs.currentPlayer() })" class="bg-gray-100 h-24 aspect-square rounded-md cursor-pointer transition-all duration-300
+      grid place-items-center text-4xl font-bold" [class.hover:bg-gray-200]="item === null"
+  [class.bg-gray-600]="!!item">
+
+  @if(item !== null){
+  <span [class.text-blue-500]="item === 'X'" [class.text-red-500]="item === 'O'">
+    {{item}}
+  </span>
+  }
+</button>
