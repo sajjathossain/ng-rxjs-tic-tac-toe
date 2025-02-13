@@ -1,0 +1,6 @@
+<div class="flex items-center justify-center text-2xl font-bold gap-3 py-2">
+  <h1>Current Player</h1>
+  <h1 [class.text-blue-500]="currentPlayer === 'X'" [class.text-red-500]="currentPlayer === 'O'">
+    {{ currentPlayer }}
+  </h1>
+</div>
