@@ -8,11 +8,28 @@ import { CurrentPlayerComponent } from "./components/current-player/current-play
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [AsyncPipe, NotificationComponent, PlayerButtonComponent, CurrentPlayerComponent],
-  providers: [BoardService],
+  imports: [NotificationComponent, PlayerButtonComponent, CurrentPlayerComponent],
+  providers: [BoardService, AsyncPipe],
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  protected readonly bs = inject(BoardService)
+  private readonly bs = inject(BoardService)
+  private readonly ap = inject(AsyncPipe)
+
+  get isGameOver() {
+    return this.ap.transform(this.bs.isGameOver)
+  }
+
+  get isXWinner() {
+    return this.ap.transform(this.bs.isXWinner)
+  }
+
+  get isOWinner() {
+    return this.ap.transform(this.bs.isOWinner)
+  }
+
+  get board() {
+    return this.ap.transform(this.bs.board$)
+  }
 }
 
