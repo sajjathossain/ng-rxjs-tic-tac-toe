@@ -1,13 +1,17 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AsyncPipe, JsonPipe, } from '@angular/common';
+import { BoardService } from './board.service';
+import { NotificationComponent } from './notification/notification.component';
+import { PlayerButtonComponent } from './player-button/player-button.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [AsyncPipe, NotificationComponent, PlayerButtonComponent],
+  providers: [BoardService],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'ng-tic-tac-toe';
+  protected readonly bs = inject(BoardService)
 }
+
