@@ -5,7 +5,7 @@ import { BoardService } from '#shared/services';
 @Component({
   selector: 'app-notification',
   standalone: true,
-  imports: [AsyncPipe],
+  providers: [AsyncPipe],
   styles: `
     :host {
       @apply absolute w-full h-full top-0 left-0 z-10 bg-gray-700 backdrop-blur-md
@@ -14,7 +14,23 @@ import { BoardService } from '#shared/services';
   templateUrl: './notification.component.html',
 })
 export class NotificationComponent {
+  private readonly bs = inject(BoardService)
+  private readonly pipeSync = inject(AsyncPipe)
 
-  protected readonly bs = inject(BoardService)
+  get isXWinner() {
+    return this.pipeSync.transform(this.bs.isXWinner)
+  }
+
+  get isOWinner() {
+    return this.pipeSync.transform(this.bs.isOWinner)
+  }
+
+  get isGameOver() {
+    return this.pipeSync.transform(this.bs.isGameOver)
+  }
+
+  protected resetBoard() {
+    this.bs.resetBoard$.next()
+  }
 
 }
