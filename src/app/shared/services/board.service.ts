@@ -20,7 +20,6 @@ export class BoardService {
 
 
   private readonly checkWinner = (board: TState, player: TPlayer) => {
-    console.log(board)
     for (const combination of this.winningCombinations) {
       const [pos1, pos2, pos3] = combination
       if (board[pos1] === player && board[pos2] === player && board[pos3] === player) {
@@ -90,14 +89,12 @@ export class BoardService {
     return state.filter(Boolean).length
   }
 
-  private boardValues$ = new BehaviorSubject<TState>(this.initialState).pipe(map((values) => (_state: TState) => values));
-
   readonly currentPlayer = signal<TPlayer>("X");
   readonly resetBoard$ = new Subject<void>()
   readonly addValue$ = new Subject<{ idx: number, player: TPlayer }>()
   readonly keypress$ = fromEvent<KeyboardEvent>(document, "keydown").pipe<KeyboardEvent, KeyboardEvent>(filter(this.isKeyAllowed), tap(event => event.preventDefault()))
 
-  private readonly board$ = this.boardValues$.pipe(mergeWith(this.keypress$.pipe(map(this.keypress)), this.addValue$.pipe(map(this.addValue)), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => stateHandlerFN(state), this.initialState), shareReplay(1))
+  private readonly board$ = new BehaviorSubject<TState>(this.initialState).pipe(map((values) => (_state: TState) => values)).pipe(mergeWith(this.keypress$.pipe(map(this.keypress)), this.addValue$.pipe(map(this.addValue)), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => stateHandlerFN(state), this.initialState), shareReplay(1))
 
   readonly totalCount = this.board$.pipe(map(this.caclulateTotalCount))
   readonly isXWinner = this.board$.pipe(skipWhile(state => this.caclulateTotalCount(state) <= 4), map(values => this.checkWinner(values, "X")))
