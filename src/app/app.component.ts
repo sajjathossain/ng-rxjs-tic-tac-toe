@@ -29,7 +29,7 @@ export class AppComponent {
   }
 
   get board() {
-    return this.ap.transform(this.bs.board$)
+    return this.ap.transform(this.bs.board)
   }
 }
 
