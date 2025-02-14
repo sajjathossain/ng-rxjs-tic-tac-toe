@@ -1,4 +1,4 @@
-import { BoardService } from '#shared/services';
+import { BoardConsumerService } from '#shared/services/board-consumer.service';
 import { Component, inject } from '@angular/core';
 
 @Component({
@@ -8,9 +8,5 @@ import { Component, inject } from '@angular/core';
   templateUrl: './current-player.component.html',
 })
 export class CurrentPlayerComponent {
-  private readonly bs = inject(BoardService)
-  get currentPlayer() {
-    return this.bs.currentPlayer()
-  }
-
+  readonly bc = inject(BoardConsumerService)
 }

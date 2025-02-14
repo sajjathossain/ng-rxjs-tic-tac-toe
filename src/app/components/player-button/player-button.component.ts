@@ -1,4 +1,4 @@
-import { BoardService } from '#shared/services';
+import { BoardConsumerService } from '#shared/services/board-consumer.service';
 import { TPlayer } from '#shared/types';
 import { Component, inject, Input } from '@angular/core';
 
@@ -9,12 +9,12 @@ import { Component, inject, Input } from '@angular/core';
   templateUrl: './player-button.component.html',
 })
 export class PlayerButtonComponent {
-  @Input("item") item: TPlayer | null = null
-  @Input("index") index: number = 0
+  @Input() item: TPlayer | null = null
+  @Input() index = 0
 
-  private readonly bs = inject(BoardService)
+  private readonly bc = inject(BoardConsumerService)
 
   protected addValue() {
-    this.bs.addValue$.next({ idx: this.index, player: this.bs.currentPlayer() })
+    this.bc.addValue({ idx: this.index, player: this.bc.currentPlayer })
   }
 }

@@ -1,17 +1,17 @@
 <div class="grid place-items-center gap-2 text-4xl font-bold h-full w-full">
-  @if(isXWinner || isOWinner ){
+  @if(bc.isXWinner || bc.isOWinner ){
   <div class="h-fit flex gap-2">
-    @if(isXWinner ){
+    @if(bc.isXWinner ){
     <div class="text-blue-500">X</div>
     }
-    @if(isOWinner ){
+    @if(bc.isOWinner ){
     <div class="text-red-500">O</div>
     }
     <div>Wins!</div>
   </div>
-  } @else if(isGameOver){
+  } @else if(bc.isGameOver){
   <div>Draw!</div>
   }
 
-  <button (click)="resetBoard()" class="btn btn-error">Reset</button>
+  <button (click)="bc.resetBoard()" class="btn btn-error">Reset</button>
 </div>

@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { BoardService } from '#shared/services';
+import { BoardConsumerService } from '#shared/services/board-consumer.service';
 
 @Component({
   selector: 'app-notification',
@@ -13,23 +12,5 @@ import { BoardService } from '#shared/services';
   templateUrl: './notification.component.html',
 })
 export class NotificationComponent {
-  private readonly bs = inject(BoardService)
-  private readonly pipeSync = inject(AsyncPipe)
-
-  get isXWinner() {
-    return this.pipeSync.transform(this.bs.isXWinner)
-  }
-
-  get isOWinner() {
-    return this.pipeSync.transform(this.bs.isOWinner)
-  }
-
-  get isGameOver() {
-    return this.pipeSync.transform(this.bs.isGameOver)
-  }
-
-  protected resetBoard() {
-    this.bs.resetBoard$.next()
-  }
-
+  protected readonly bc = inject(BoardConsumerService)
 }

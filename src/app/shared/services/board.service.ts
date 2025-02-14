@@ -49,6 +49,7 @@ export class BoardService {
     return initalState
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private readonly resetBoard = (_event: void) => (_state: TState): TState => {
     return this.initialState
   }
@@ -94,7 +95,11 @@ export class BoardService {
   readonly addValue$ = new Subject<{ idx: number, player: TPlayer }>()
   readonly keypress$ = fromEvent<KeyboardEvent>(document, "keydown").pipe<KeyboardEvent, KeyboardEvent>(filter(this.isKeyAllowed), tap(event => event.preventDefault()))
 
-  private readonly board$ = new BehaviorSubject<TState>(this.initialState).pipe(map((values) => (_state: TState) => values)).pipe(mergeWith(this.keypress$.pipe(map(this.keypress)), this.addValue$.pipe(map(this.addValue)), this.resetBoard$.pipe(map(this.resetBoard))), scan((state: TState, stateHandlerFN) => stateHandlerFN(state), this.initialState), shareReplay(1))
+  private readonly board$ = new BehaviorSubject<TState>(this.initialState)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    .pipe(map((values) => (_state: TState) => values))
+    .pipe(mergeWith(this.keypress$.pipe(map(this.keypress)), this.addValue$.pipe(map(this.addValue)), this.resetBoard$.pipe(map(this.resetBoard))))
+    .pipe(scan((state, stateHandlerFN) => stateHandlerFN(state), this.initialState), shareReplay(1))
 
   readonly totalCount = this.board$.pipe(map(this.caclulateTotalCount))
   readonly isXWinner = this.board$.pipe(skipWhile(state => this.caclulateTotalCount(state) <= 4), map(values => this.checkWinner(values, "X")))
