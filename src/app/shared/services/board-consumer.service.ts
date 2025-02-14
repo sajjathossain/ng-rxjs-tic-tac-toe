@@ -11,15 +11,15 @@ export class BoardConsumerService {
   private readonly bs = inject(BoardService)
 
   get isXWinner() {
-    return this.ap.transform(this.bs.isXWinner)
+    return this.ap.transform(this.bs.isXWinner$)
   }
 
   get isOWinner() {
-    return this.ap.transform(this.bs.isOWinner)
+    return this.ap.transform(this.bs.isOWinner$)
   }
 
   get isGameOver() {
-    return this.ap.transform(this.bs.isGameOver)
+    return this.ap.transform(this.bs.isGameOver$)
   }
 
   resetBoard() {

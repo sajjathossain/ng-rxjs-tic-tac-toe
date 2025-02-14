@@ -98,13 +98,44 @@ export class BoardService {
   private readonly board$ = new BehaviorSubject<TState>(this.initialState)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .pipe(map((values) => (_state: TState) => values))
-    .pipe(mergeWith(this.keypress$.pipe(map(this.keypress)), this.addValue$.pipe(map(this.addValue)), this.resetBoard$.pipe(map(this.resetBoard))))
-    .pipe(scan((state, stateHandlerFN) => stateHandlerFN(state), this.initialState), shareReplay(1))
+    .pipe(
+      mergeWith(
+        this.keypress$.pipe(map(this.keypress)),
+        this.addValue$.pipe(map(this.addValue)),
+        this.resetBoard$.pipe(map(this.resetBoard))
+      )
+    )
+    .pipe(
+      scan((state, stateHandlerFN) => stateHandlerFN(state), this.initialState),
+      shareReplay(1)
+    )
 
-  readonly totalCount = this.board$.pipe(map(this.caclulateTotalCount))
-  readonly isXWinner = this.board$.pipe(skipWhile(state => this.caclulateTotalCount(state) <= 4), map(values => this.checkWinner(values, "X")))
-  readonly isOWinner = this.board$.pipe(skipWhile(state => this.caclulateTotalCount(state) <= 4), map(values => this.checkWinner(values, "O")))
 
-  readonly isGameOver = combineLatest([this.isXWinner, this.isOWinner, this.totalCount.pipe(map(value => value === 9))]).pipe(map((values) => values.some(Boolean)))
+  readonly totalCount$ = new BehaviorSubject<number>(0)
+    .pipe(map(() => (_state: number) => _state))
+    .pipe(
+      mergeWith(
+        this.addValue$.pipe(map(() => (state: number) => state + 1)),
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        this.resetBoard$.pipe(map(() => (_state: number) => 0))
+      )
+    )
+    .pipe(
+      scan((state, stateHandlerFN) => stateHandlerFN(state), 0)
+    )
+
+
+  readonly isXWinner$ = this.board$.pipe(
+    skipWhile(state => this.caclulateTotalCount(state) <= 4),
+    map(values => this.checkWinner(values, "X"))
+  )
+  readonly isOWinner$ = this.board$.pipe(
+    skipWhile(state => this.caclulateTotalCount(state) <= 4),
+    map(values => this.checkWinner(values, "O"))
+  )
+
+  readonly isGameOver$ = combineLatest(
+    [this.isXWinner$, this.isOWinner$, this.totalCount$.pipe(map(value => value === 9))]
+  ).pipe(map((values) => values.some(Boolean)))
 }
 
