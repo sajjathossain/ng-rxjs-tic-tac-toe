@@ -117,7 +117,7 @@ export class BoardService {
 
   readonly isXWinner$ = this.board$.pipe(
     skipWhile(state => this.caclulateTotalCount(state) <= 4),
-    map(values => this.checkWinner(values, "X"))
+    scan((_prev, current) => this.checkWinner(current, "X"), false)
   )
   readonly isOWinner$ = this.board$.pipe(
     skipWhile(state => this.caclulateTotalCount(state) <= 4),
