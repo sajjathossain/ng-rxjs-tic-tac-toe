@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { BoardConsumerService } from '#shared/services/board-consumer.service';
 
 @Component({
   selector: 'app-notification',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
     :host {
       @apply absolute w-full h-full top-0 left-0 z-10 bg-gray-700 backdrop-blur-md rounded-md

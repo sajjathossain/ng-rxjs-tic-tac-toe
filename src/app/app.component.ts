@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { NotificationComponent } from '#components/notification/notification.component';
 import { PlayerButtonComponent } from '#components/player-button/player-button.component';
@@ -10,6 +10,7 @@ import { BoardConsumerService } from '#shared/services/board-consumer.service';
   standalone: true,
   imports: [NotificationComponent, PlayerButtonComponent, CurrentPlayerComponent],
   providers: [BoardConsumerService, AsyncPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.component.html',
 })
 export class AppComponent {

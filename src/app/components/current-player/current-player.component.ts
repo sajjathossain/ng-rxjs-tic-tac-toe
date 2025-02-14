@@ -1,9 +1,10 @@
 import { BoardConsumerService } from '#shared/services/board-consumer.service';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 @Component({
   selector: 'app-current-player',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [],
   templateUrl: './current-player.component.html',
 })
