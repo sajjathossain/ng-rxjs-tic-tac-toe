@@ -111,19 +111,9 @@ export class BoardService {
     )
 
 
-  readonly totalCount$ = new BehaviorSubject<number>(0)
-    .pipe(map(() => (_state: number) => _state))
-    .pipe(
-      mergeWith(
-        this.addValue$.pipe(map(() => (state: number) => state + 1)),
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        this.resetBoard$.pipe(map(() => (_state: number) => 0))
-      )
-    )
-    .pipe(
-      scan((state, stateHandlerFN) => stateHandlerFN(state), 0)
-    )
-
+  readonly totalCount$ = this.board$.pipe(
+    map(this.caclulateTotalCount)
+  )
 
   readonly isXWinner$ = this.board$.pipe(
     skipWhile(state => this.caclulateTotalCount(state) <= 4),
