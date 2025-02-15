@@ -107,25 +107,28 @@ export class BoardService {
     )
     .pipe(
       scan((state, stateHandlerFN) => stateHandlerFN(state), this.initialState),
-      shareReplay(1)
-    )
+    ).pipe(shareReplay(1))
 
 
   readonly totalCount$ = this.board$.pipe(
-    map(this.caclulateTotalCount)
+    map(this.caclulateTotalCount),
+    shareReplay(1),
   )
 
   readonly isXWinner$ = this.board$.pipe(
     skipWhile(state => this.caclulateTotalCount(state) <= 4),
-    scan((_prev, current) => this.checkWinner(current, "X"), false)
+    scan((_prev, current) => this.checkWinner(current, "X"), false),
+    shareReplay(1),
   )
   readonly isOWinner$ = this.board$.pipe(
     skipWhile(state => this.caclulateTotalCount(state) <= 4),
-    map(values => this.checkWinner(values, "O"))
+    map(values => this.checkWinner(values, "O")),
+    shareReplay(1),
   )
 
   readonly isGameOver$ = combineLatest(
     [this.isXWinner$, this.isOWinner$, this.totalCount$.pipe(map(value => value === 9))]
   ).pipe(map((values) => values.some(Boolean)))
+    .pipe(shareReplay(1))
 }
 
