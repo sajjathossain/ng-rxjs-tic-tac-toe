@@ -1,7 +1,6 @@
 import { AsyncPipe } from "@angular/common";
 import { inject, Injectable } from "@angular/core";
 import { BoardService } from "./board.service";
-import { TPlayer } from "#shared/types";
 
 @Injectable({
   providedIn: 'root',
@@ -31,10 +30,10 @@ export class BoardConsumerService {
   }
 
   get currentPlayer() {
-    return this.bs.currentPlayer()
+    return this.bs.isXNext() ? "X" : "O"
   }
 
-  addValue(payload: { idx: number, player: TPlayer }) {
-    this.bs.addValue$.next(payload)
+  addValue(idx: number) {
+    this.bs.addValue$.next(idx)
   }
 }
