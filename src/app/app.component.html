@@ -8,8 +8,6 @@
       }
     </div>
 
-    @if(bc.isGameOver){
-    <app-notification />
-    }
+    <app-notification *ngIf="bc.isGameOver" />
   </div>
 </div>
