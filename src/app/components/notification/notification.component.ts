@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { BoardConsumerService } from '#shared/services/board-consumer.service';
+import { NgIf } from '@angular/common';
 
 @Component({
+  imports: [NgIf],
   selector: 'app-notification',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,

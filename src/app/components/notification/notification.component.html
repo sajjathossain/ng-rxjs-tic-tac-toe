@@ -1,17 +1,11 @@
 <div class="grid place-items-center gap-2 text-4xl font-bold h-full w-full">
-  @if(bc.isXWinner || bc.isOWinner ){
-  <div class="h-fit flex gap-2">
-    @if(bc.isXWinner ){
-    <div class="text-blue-500">X</div>
-    }
-    @if(bc.isOWinner ){
-    <div class="text-red-500">O</div>
-    }
+  <div class="h-fit flex gap-2" *ngIf="bc.isXWinner || bc.isOWinner">
+    <div *ngIf="bc.isXWinner" class="text-blue-500">X</div>
+    <div *ngIf="bc.isOWinner" class="text-red-500">O</div>
     <div>Wins!</div>
   </div>
-  } @else if(bc.isGameOver){
-  <div>Draw!</div>
-  }
+
+  <div *ngIf="bc.isGameOver">Draw!</div>
 
   <button (click)="bc.resetBoard()" class="btn btn-error">Reset</button>
 </div>
