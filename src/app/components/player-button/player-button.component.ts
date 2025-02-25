@@ -1,12 +1,13 @@
 import { BoardConsumerService } from '#shared/services/board-consumer.service';
 import { TPlayer } from '#shared/types';
+import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 
 @Component({
   selector: 'app-player-button',
   standalone: true,
+  imports: [NgIf],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
   templateUrl: './player-button.component.html',
 })
 export class PlayerButtonComponent {
