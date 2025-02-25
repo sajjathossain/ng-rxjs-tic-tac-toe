@@ -1,11 +1,10 @@
 <div class="h-screen w-screen grid place-items-center">
   <div class="relative">
     <app-current-player></app-current-player>
+
     <div [class.pointer-events-none]="bc.isXWinner || bc.isOWinner"
       class="bg-gray-700 h-fit aspect-square grid grid-cols-3 gap-2 p-2 rounded-md overflow-hidden">
-      @for(item of bc.board; track $index){
-      <app-player-button [item]="item" [index]="$index"></app-player-button>
-      }
+      <app-player-button *ngFor="let item of bc.board; index as $index" [item]="item" [index]="$index" />
     </div>
 
     <app-notification *ngIf="bc.isGameOver" />
