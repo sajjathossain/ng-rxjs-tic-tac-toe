@@ -16,6 +16,6 @@ export class PlayerButtonComponent {
   private readonly bc = inject(BoardConsumerService)
 
   protected addValue() {
-    this.bc.addValue({ idx: this.index(), player: this.bc.currentPlayer })
+    this.bc.addValue(this.index())
   }
 }
