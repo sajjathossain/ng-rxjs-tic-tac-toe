@@ -22,8 +22,7 @@ export class BoardService {
 
   private readonly checkWinner = (board: TState, player: TPlayer) => {
     for (const combination of this.winningCombinations) {
-      const [pos1, pos2, pos3] = combination
-      if (board[pos1] === player && board[pos2] === player && board[pos3] === player) {
+      if (combination.every(idx => board[idx] === player)) {
         return true
       }
     }
