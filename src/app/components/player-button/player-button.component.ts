@@ -1,4 +1,4 @@
-import { BoardConsumerService } from '#shared/services/board-consumer.service';
+import { BoardService } from '#shared/services';
 import { TPlayer } from '#shared/types';
 import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
@@ -14,9 +14,9 @@ export class PlayerButtonComponent {
   readonly item = input<TPlayer | null>(null);
   readonly index = input(0);
 
-  private readonly bc = inject(BoardConsumerService)
+  private readonly bs = inject(BoardService)
 
   protected addValue() {
-    this.bc.addValue(this.index())
+    this.bs.addValue$.next(this.index())
   }
 }

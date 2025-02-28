@@ -1,4 +1,5 @@
-import { BoardConsumerService } from '#shared/services/board-consumer.service';
+import { BoardService } from '#shared/services';
+import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 @Component({
@@ -6,8 +7,11 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [],
+  providers: [AsyncPipe],
   templateUrl: './current-player.component.html',
 })
 export class CurrentPlayerComponent {
-  readonly bc = inject(BoardConsumerService)
+  readonly bs = inject(BoardService)
+  readonly ap = inject(AsyncPipe)
+  readonly currentPlayer = this.bs.isXNext() ? "X" : "O"
 }

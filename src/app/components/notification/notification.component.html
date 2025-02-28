@@ -1,17 +1,17 @@
 <div class="grid place-items-center gap-2 text-4xl font-bold h-full w-full">
-  <ng-container *ngIf="(bc.isXWinner || bc.isOWinner); then winner;else draw" />
+  <ng-container *ngIf="(isXWinner || isOWinner); then winner;else draw" />
 
   <ng-template #winner>
     <div class="h-fit flex gap-2">
-      <div *ngIf="bc.isXWinner" class="text-blue-500">X</div>
-      <div *ngIf="bc.isOWinner" class="text-red-500">O</div>
+      <div *ngIf="isXWinner" class="text-blue-500">X</div>
+      <div *ngIf="isOWinner" class="text-red-500">O</div>
       <div>Wins!</div>
     </div>
   </ng-template>
 
   <ng-template #draw>
-    <div *ngIf="bc.isGameOver">Draw!</div>
+    <div *ngIf="isGameOver">Draw!</div>
   </ng-template>
 
-  <button (click)="bc.resetBoard()" class="btn btn-error">Reset</button>
+  <button (click)="resetBoard()" class="btn btn-error">Reset</button>
 </div>

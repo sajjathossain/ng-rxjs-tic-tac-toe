@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { BoardConsumerService } from '#shared/services/board-consumer.service';
-import { NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { BoardService } from '#shared/services';
 
 @Component({
   imports: [NgIf],
+  providers: [AsyncPipe],
   selector: 'app-notification',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,5 +16,14 @@ import { NgIf } from '@angular/common';
   templateUrl: './notification.component.html',
 })
 export class NotificationComponent {
-  protected readonly bc = inject(BoardConsumerService)
+  protected readonly bs = inject(BoardService)
+  protected readonly ap = inject(AsyncPipe)
+
+  protected readonly isXWinner = this.ap.transform(this.bs.isXWinner$)
+  protected readonly isOWinner = this.ap.transform(this.bs.isOWinner$)
+  protected readonly isGameOver = this.ap.transform(this.bs.isGameOver$)
+
+  resetBoard() {
+    this.bs.resetBoard$.next()
+  }
 }
