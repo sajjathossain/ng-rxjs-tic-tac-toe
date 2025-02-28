@@ -73,10 +73,6 @@ export class BoardService {
     return this.addValue(key)(state)
   }
 
-  get board() {
-    return this.board$
-  }
-
   private caclulateTotalCount(state: TState) {
     return state.filter(Boolean).length
   }
@@ -85,7 +81,7 @@ export class BoardService {
   readonly addValue$ = new Subject<number>()
   readonly keypress$ = fromEvent<KeyboardEvent>(document, "keydown").pipe<KeyboardEvent, KeyboardEvent>(filter(this.isKeyAllowed), tap(event => event.preventDefault()))
 
-  private readonly board$ = new BehaviorSubject<TState>(this.initialState)
+  readonly board$ = new BehaviorSubject<TState>(this.initialState)
     .pipe(map(() => (_state: TState) => _state))
     .pipe(
       mergeWith(
