@@ -1,6 +1,6 @@
 import { TPlayer, TState } from "#shared/types";
-import { Injectable } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
+import { AsyncPipe } from "@angular/common";
+import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, combineLatest, fromEvent, Subject } from "rxjs";
 import { filter, map, mergeWith, scan, shareReplay, skipWhile, tap } from "rxjs/operators";
 
@@ -8,6 +8,8 @@ import { filter, map, mergeWith, scan, shareReplay, skipWhile, tap } from "rxjs/
   providedIn: 'root'
 })
 export class BoardService {
+  private readonly ap = inject(AsyncPipe)
+
   private readonly winningCombinations = [
     [0, 1, 2],
     [3, 4, 5],
@@ -31,7 +33,7 @@ export class BoardService {
   }
 
   private readonly addValue = (idx: number) => (state: TState): TState => {
-    const currentPlayer = this.isXNext() ? "X" : "O";
+    const currentPlayer = this.ap.transform(this.currentPlayer$);
     state.splice(idx, 1, currentPlayer);
 
     return state;
@@ -95,9 +97,15 @@ export class BoardService {
     ).pipe(shareReplay(1))
 
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private readonly isXNext$ = new BehaviorSubject<boolean>(true).pipe(mergeWith(this.board$)).pipe(scan((_prev, _current) => !_prev, true))
-  readonly isXNext = toSignal(this.isXNext$)
+
+  readonly currentPlayer$ = new BehaviorSubject<boolean>(true)
+    .pipe(mergeWith(this.board$))
+    .pipe(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      scan((_prev, _current) => !_prev, true),
+      shareReplay()
+    )
+    .pipe(map(isXNext => isXNext ? 'X' : 'O'))
 
   readonly totalCount$ = this.board$.pipe(
     map(this.caclulateTotalCount),
