@@ -1,6 +1,5 @@
 import { TPlayer, TState } from "#shared/types";
-import { AsyncPipe } from "@angular/common";
-import { inject, Injectable } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import { BehaviorSubject, combineLatest, fromEvent, Subject } from "rxjs";
 import { filter, map, mergeWith, scan, shareReplay, skipWhile, tap } from "rxjs/operators";
 
@@ -8,7 +7,6 @@ import { filter, map, mergeWith, scan, shareReplay, skipWhile, tap } from "rxjs/
   providedIn: 'root'
 })
 export class BoardService {
-  private readonly ap = inject(AsyncPipe)
 
   private readonly winningCombinations = [
     [0, 1, 2],
@@ -33,7 +31,7 @@ export class BoardService {
   }
 
   private readonly addValue = (idx: number) => (state: TState): TState => {
-    const currentPlayer = this.ap.transform(this.currentPlayer$);
+    const currentPlayer = this.currentPlayer();
     state.splice(idx, 1, currentPlayer);
 
     return state;
@@ -94,38 +92,39 @@ export class BoardService {
     )
     .pipe(
       scan((state, stateHandlerFN) => stateHandlerFN(state), this.initialState),
-    ).pipe(shareReplay(1))
+    ).pipe(shareReplay())
 
 
 
-  readonly currentPlayer$ = new BehaviorSubject<boolean>(true)
-    .pipe(mergeWith(this.board$))
+  readonly currentPlayer$ = this.board$
     .pipe(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      scan((_prev, _current) => !_prev, true),
+      scan((_prev, _current) => !_prev, false), // false = X
+      map(isXNext => {
+        const player = isXNext ? "X" : "O"
+        this.currentPlayer.update(() => player)
+        return player
+      }),
       shareReplay()
     )
-    .pipe(map(isXNext => isXNext ? 'X' : 'O'))
+
+  private readonly currentPlayer = signal<"X" | "O">("X")
 
   readonly totalCount$ = this.board$.pipe(
     map(this.caclulateTotalCount),
-    shareReplay(1),
   )
 
   readonly isXWinner$ = this.board$.pipe(
     skipWhile(state => this.caclulateTotalCount(state) <= 4),
     scan((_prev, current) => this.checkWinner(current, "X"), false),
-    shareReplay(1),
   )
   readonly isOWinner$ = this.board$.pipe(
     skipWhile(state => this.caclulateTotalCount(state) <= 4),
     scan((_prev, current) => this.checkWinner(current, "O"), false),
-    shareReplay(1),
   )
 
   readonly isGameOver$ = combineLatest(
     [this.isXWinner$, this.isOWinner$, this.totalCount$.pipe(map(value => value === 9))]
   ).pipe(map((values) => values.some(Boolean)))
-    .pipe(shareReplay(1))
 }
 
